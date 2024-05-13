@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: curlpod
+spec:
+  containers:
+  - name: curlcontainer
+    image: yzzhangllm/curlpod:latest
+  nodeSelector:
+    key: value
+  restartPolicy: Never  # 确保在任务完成后不会重启容器
+#apiVersion: batch/v1
+#kind: Job
+#metadata:
+#  name: curljob
+#spec:
+#  parallelism: 3  # 指定你想要同时运行的Pod数量
+#  completions: 3  # 指定总共需要完成的任务数量，与parallelism相同意味着每个Pod只运行一次
+#  template:
+#    metadata:
+#      labels:
+#        app: curlpod
+#    spec:
+#      containers:
+#      - name: curlcontainer
+#        image: yzzhangllm/curlpodtest:latest
+#      nodeSelector:
+#        key: value
+#      restartPolicy: Never
+
