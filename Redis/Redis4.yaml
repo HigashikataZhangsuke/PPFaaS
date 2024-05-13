@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis4-deployment
+spec:
+  selector:
+    matchLabels:
+      app: redis4
+  template:
+    metadata:
+      labels:
+        app: redis4
+    spec:
+      containers:
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: vm
+                operator: In
+                values:
+                - RD  # 假设VMA是目标节点的标签
