@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: curlpod
+spec:
+  containers:
+  - name: curlcontainer
+    image: yzzhangllm/curlpod:latest

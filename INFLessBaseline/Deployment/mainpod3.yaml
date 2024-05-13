@@ -1,0 +1,50 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: ppsthree
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        #autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "8"
+        #autoscaling.knative.dev/target-utilization-percentage: "80"
+        autoscaling.knative.dev/metric: "rps"
+        autoscaling.knative.dev/target: "10"
+    spec:
+      containers:
+      - name: redis
+        image: redis:alpine
+
+      - name: cr
+        image: yzzhangllm/scheduler:latest
+        env:
+          - name: REDIS_HOST
+            value: "localhost"
+          - name: REDIS_PORT
+            value: "6379"
+        ports:
+        - containerPort: 12346
+
+
+      - name: mp
+        image: yzzhangllm/infthree:latest
+        env:
+          - name: REDIS_HOST
+            value: "localhost"
+          - name: REDIS_PORT
+            value: "6379"
+        volumeMounts:
+          - name: my-volume
+            mountPath: /home/ubuntu/modelstorage
+        resources:
+          requests:
+            nvidia.com/gpu: 1  # 请求1个GPU
+          limits:
+            nvidia.com/gpu: 1  # 限制最多使用1个GPU
+
+      volumes:
+        - name: my-volume
+          persistentVolumeClaim:
+            claimName: my-pvc
