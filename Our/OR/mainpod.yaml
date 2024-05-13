@@ -1,0 +1,37 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: pps
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "1"
+    spec:
+      containers:
+
+      - name: cr
+        image: yzzhangllm/scheduler:latest
+        ports:
+        - containerPort: 12346
+
+      - name: sr
+        image: yzzhangllm/searcher:latest
+
+      - name: mp
+        image: yzzhangllm/infcontainer:latest
+        volumeMounts:
+          - name: my-volume
+            mountPath: /home/ubuntu/modelstorage
+        resources:
+          requests:
+            nvidia.com/gpu: 8  # 请求1个GPU
+          limits:
+            nvidia.com/gpu: 8  # 限制最多使用1个GPU
+
+      volumes:
+        - name: my-volume
+          persistentVolumeClaim:
+            claimName: my-pvc
